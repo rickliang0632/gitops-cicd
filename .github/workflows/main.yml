@@ -24,6 +24,7 @@ on:
 
 jobs:
   log-the-inputs:
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -35,3 +36,10 @@ jobs:
           LEVEL: ${{ inputs.logLevel }}
           TAGS: ${{ inputs.tags }}
           ENVIRONMENT: ${{ inputs.environment }}
+  log-the-push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "EventName: ${{ github.event_name }}"
+
