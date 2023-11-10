@@ -1,3 +1,5 @@
+name: learn-github-actions
+run-name: ${{ github.actor }} is learning GitHub Actions
 on:
   push:
     branches:
@@ -23,8 +25,7 @@ on:
         required: true
 
 jobs:
-  log-the-inputs:
-    if: github.event_name != 'push'
+  log-the-events:
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -32,14 +33,14 @@ jobs:
           echo "Tags: $TAGS"
           echo "Environment: $ENVIRONMENT"
           echo "EventName: ${{ github.event_name }}"
+        if: github.event_name != 'push'
+        name: log-inputs
         env:
           LEVEL: ${{ inputs.logLevel }}
           TAGS: ${{ inputs.tags }}
           ENVIRONMENT: ${{ inputs.environment }}
-  log-the-push:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
       - run: |
           echo "EventName: ${{ github.event_name }}"
+        name: log-push
+        if: github.event_name == 'push'
 
