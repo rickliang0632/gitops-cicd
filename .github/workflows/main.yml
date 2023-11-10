@@ -43,4 +43,11 @@ jobs:
           echo "EventName: ${{ github.event_name }}"
         name: log-push
         if: github.event_name == 'push'
-
+  deploytest:
+    runs-on: ubuntu-latest
+    environment: dispatch
+    steps:
+      - name: deploy
+        run: | 
+          echo "Deployment ..."
+  
