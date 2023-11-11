@@ -1,7 +1,17 @@
 service_name: gitops-cicd
-deploy_environment:
+deployment_stacks:
+  dev:
+    - stack1
+    - stack2
+  qa:
+    - stack3
+    - stack4
+  uat:
+    - stack5
+    - stack6
+  production:
+    - stack7
+    - stack8
+test_phases:
   - dev
-  - staging
-test_environment:
-  - dev
-  - staging
+  - qa

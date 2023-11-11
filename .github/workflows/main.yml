@@ -1,20 +1,26 @@
 name: learn-github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
+#run-name: ${{ github.actor }} is learning GitHub Actions
 on:
   push:
     branches:
     - main
   workflow_dispatch:
     inputs:
-      logLevel:
-        description: 'Log level'
+      stacks:
+        description: 'Deployment stacks'
         required: true
-        default: 'warning'
+        default: 'all'
         type: choice
         options:
-        - info
-        - warning
-        - debug
+        - all
+        - stack1
+        - stack2
+        - stack3
+        - stack4
+        - stack5
+        - stack6
+        - stack7
+        - stack8
       tags:
         description: 'Test scenario tags'
         required: false
@@ -29,14 +35,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo "Log level: $LEVEL"
+          echo "Stack: $STACK"
           echo "Tags: $TAGS"
           echo "Environment: $ENVIRONMENT"
           echo "EventName: ${{ github.event_name }}"
         if: github.event_name != 'push'
         name: log-inputs
         env:
-          LEVEL: ${{ inputs.logLevel }}
+          STACK: ${{ inputs.stacks }}
           TAGS: ${{ inputs.tags }}
           ENVIRONMENT: ${{ inputs.environment }}
       - run: |
@@ -62,8 +68,8 @@ jobs:
           file-path: 'cicd.yaml'
       - run: |
           echo "${{ steps.yaml.outputs.service_name }}"
-          echo "${{ steps.yaml.outputs.deploy_environment }}"
-          echo "${{ steps.yaml.outputs.test_environment }}"
+          echo "${{ steps.yaml.outputs.deployment_stacks }}"
+          echo "${{ steps.yaml.outputs.test_phases }}"
       - name: deploy
         run: | 
           echo "Deployment non-prod ... by ${{ github.event_name }}"
