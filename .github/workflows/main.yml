@@ -52,14 +52,17 @@ jobs:
   deploy-manul:
     if: github.event_name != 'push'
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    needs: mock-build
+    #environment: ${{ inputs.environment }}
     steps:
       - name: deploy
+        environment: ${{ inputs.environment }}
         run: | 
           echo "Deployment for $ENVIRONMENT ... by ${{ github.event_name }} "
   deploy-auto-non-prod:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    needs: mock-build
     steps:
       - uses: actions/checkout@v3
       - uses: actions-tools/yaml-outputs@v2
@@ -77,9 +80,11 @@ jobs:
   deploy-promote-prod:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    environment: production
+    needs: mock-build
+    #environment: production
     steps:
       - name: deploy
+        environment: production
         run: | 
           echo "Deployment production ... by ${{ github.event_name }}"
           echo "Create PR into configuration repo and require review before merge"
