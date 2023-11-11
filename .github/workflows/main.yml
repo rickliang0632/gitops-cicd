@@ -25,7 +25,7 @@ on:
         required: true
 
 jobs:
-  log-the-events:
+  mock-build:
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -50,15 +50,24 @@ jobs:
     steps:
       - name: deploy
         run: | 
-          echo "Deployment ... by ${{ github.event_name }} "
+          echo "Deployment for $ENVIRONMENT ... by ${{ github.event_name }} "
   deploy-auto-non-prod:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    environment: production
     steps:
+      - uses: actions/checkout@v3
+      - uses: actions-tools/yaml-outputs@v2
+        id: yaml
+        with:
+          file-path: 'cicd.yaml'
+      - run: |
+          echo "${{ steps.yaml.outputs.service_name }}"
+          echo "${{ steps.yaml.outputs.deploy_environment }}"
+          echo "${{ steps.yaml.outputs.test_environment }}"
       - name: deploy
         run: | 
-          echo "Deployment ... by ${{ github.event_name }}"
+          echo "Deployment non-prod ... by ${{ github.event_name }}"
+          echo "Create PR into configuration repo and merge automatically"
   deploy-promote-prod:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -66,4 +75,5 @@ jobs:
     steps:
       - name: deploy
         run: | 
-          echo "Deployment ... by ${{ github.event_name }}"
+          echo "Deployment production ... by ${{ github.event_name }}"
+          echo "Create PR into configuration repo and require review before merge"

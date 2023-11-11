@@ -1,0 +1,7 @@
+service_name: gitops-cicd
+deploy_environment:
+  - dev
+  - staging
+test_environment:
+  - dev
+  - staging
