@@ -43,11 +43,27 @@ jobs:
           echo "EventName: ${{ github.event_name }}"
         name: log-push
         if: github.event_name == 'push'
-  deploytest:
+  deploy-manul:
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
-    environment: dispatch
+    environment: ${{ inputs.environment }}
     steps:
       - name: deploy
         run: | 
-          echo "Deployment ..."
-  
+          echo "Deployment ... by ${{ github.event_name }} "
+  deploy-auto-non-prod:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: deploy
+        run: | 
+          echo "Deployment ... by ${{ github.event_name }}"
+  deploy-promote-prod:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: deploy
+        run: | 
+          echo "Deployment ... by ${{ github.event_name }}"
