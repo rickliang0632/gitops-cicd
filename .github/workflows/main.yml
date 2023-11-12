@@ -126,7 +126,7 @@ jobs:
           git push
         working-directory: gitops-config
   deploy-promote-prod:
-    if: github.event_name != 'push' && inputs.environment == 'production'
+    if: github.event_name != 'push' && inputs.environment == 'production' && contains(fromJson('["stack7", "stack8"]'), inputs.stacks)
     runs-on: ubuntu-latest
     needs: mock-build
     environment: production
