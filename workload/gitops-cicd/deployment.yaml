@@ -25,7 +25,7 @@ spec:
           envFrom:
             - secretRef:
                 name: gitops-cicd
-          image: gitops-cicd:78bb8fbf01fdb4638d18a62cb5bda3ee3ff5f87e3ae8329cd36af828d5ea34f316dc9cf3a318deace287a706ec174dd8e89212d7e80c0e22aecb21df95102530026e6547096c33e1205cbfe97c430e544a13209a9e10998473e04310a7c01de3d899cade1.0.0
+          image: gitops-cicd:914a1c0d585fe9560f1acdc1b0d2305263bfeb2e78bb8fbf01fdb4638d18a62cb5bda3ee3ff5f87e3ae8329cd36af828d5ea34f316dc9cf3a318deace287a706ec174dd8e89212d7e80c0e22aecb21df95102530026e6547096c33e1205cbfe97c430e544a13209a9e10998473e04310a7c01de3d899cade1.0.0
           livenessProbe:
             failureThreshold: 3
             httpGet:
