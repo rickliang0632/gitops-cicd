@@ -72,10 +72,24 @@ jobs:
           echo "${{ steps.yaml.outputs.service_name }}"
           echo "${{ steps.yaml.outputs.deployment_stacks }}"
           echo "${{ steps.yaml.outputs.test_phases }}"
-      - name: deploy
-        run: | 
-          echo "Deployment non-prod ... by ${{ github.event_name }}"
-          echo "Create PR into configuration repo and merge automatically"
+    - name: Update Image Tag Values
+      run: |
+        new_image_tag=${{ github.sha }}
+        workload_dir="workload"
+
+        # Update the values.yaml file with the new image tag
+        sed -i "s/^          image: gitops-cicd:*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$service_name/deployment.yaml"
+
+    - name: Commit the changes made
+      run: |
+        git config --global user.name 'Rick Liang'
+        git config --global user.email 'rickliang@seismic.com'
+        git commit -am "updating image tag"
+        git push
+#      - name: deploy
+#        run: |
+#          echo "Deployment non-prod ... by ${{ github.event_name }}"
+#          echo "Create PR into configuration repo and merge automatically"
   deploy-promote-prod:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
