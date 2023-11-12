@@ -84,7 +84,7 @@ jobs:
         run: |
           git config --global user.name 'Rick Liang'
           git config --global user.email 'rickliang@seismic.com'
-          git commit -am "updating image tag"
+          git commit -am "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}-${{ github.run_number }}"
           git status
           git push
         working-directory: gitops-config
@@ -111,7 +111,7 @@ jobs:
           path: gitops-config
       - name: Update Image Tag Values
         run: |
-          new_image_tag=${GITHUB_SHA:0:10}
+          new_image_tag="${GITHUB_SHA:0:10}-${{ github.run_number }}"
           workload_dir="workload"
 
           # Update the values.yaml file with the new image tag
@@ -121,7 +121,7 @@ jobs:
         run: |
           git config --global user.name 'Rick Liang'
           git config --global user.email 'rickliang@seismic.com'
-          git commit -am "updating image tag"
+          git commit -am "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}"
           git status
           git push
         working-directory: gitops-config
@@ -164,10 +164,10 @@ jobs:
           git config --local user.name "${{ github.actor }}"
           git switch -c ${HEAD_BRANCH}
           git add .
-          git commit -m "update image tag with ${GITHUB_SHA:0:10}"
+          git commit -m "update image tag with ${GITHUB_SHA:0:10}-${{ github.run_number }}"
           git push -u origin ${HEAD_BRANCH}
         working-directory: gitops-config
       - name: open PR
-        run: gh pr create --title "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}" --base main --head ${HEAD_BRANCH} --body "" -r ricliang0632
+        run: gh pr create --title "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}-${{ github.run_number }}" --base main --head ${HEAD_BRANCH} --body "" -r rickliang0632
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
