@@ -21,14 +21,16 @@ on:
         - stack6
         - stack7
         - stack8
-      tags:
-        description: 'Test scenario tags'
-        required: false
-        type: boolean
+      #tags:
+      #  description: 'Test scenario tags'
+      #  required: false
+      #  type: boolean
       environment:
         description: 'Environment to run tests against'
         type: environment
         required: true
+env:
+  SERVICE_NAME: gitops-cicd
 
 jobs:
   mock-build:
@@ -36,7 +38,6 @@ jobs:
     steps:
       - run: |
           echo "Stack: $STACK"
-          echo "Tags: $TAGS"
           echo "Environment: $ENVIRONMENT"
           echo "EventName: ${{ github.event_name }}"
         if: github.event_name != 'push'
@@ -55,9 +56,38 @@ jobs:
     needs: mock-build
     environment: ${{ inputs.environment }}
     steps:
-      - name: deploy
-        run: | 
-          echo "Deployment for $ENVIRONMENT ... by ${{ github.event_name }} "
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REPO_GITHUB_TOKEN }}
+      - uses: actions-tools/yaml-outputs@v2
+        id: yaml
+        with:
+          file-path: 'cicd.yaml'
+      - run: |
+          echo "${{ steps.yaml.outputs.deployment_stacks }}"
+          echo "${{ steps.yaml.outputs.test_phases }}"
+      - name: Checkout configuration repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REPO_GITHUB_TOKEN }}
+          repository: rickliang0632/gitops-configuration
+          path: gitops-config
+      - name: Update Image Tag Values
+        run: |
+          new_image_tag=${GITHUB_SHA:0:10}
+          workload_dir="workload"
+
+          # Update the values.yaml file with the new image tag
+          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
+        working-directory: gitops-config
+      - name: Commit the changes made
+        run: |
+          git config --global user.name 'Rick Liang'
+          git config --global user.email 'rickliang@seismic.com'
+          git commit -am "updating image tag"
+          git status
+          git push
+        working-directory: gitops-config
   deploy-auto-non-prod:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
@@ -71,7 +101,6 @@ jobs:
         with:
           file-path: 'cicd.yaml'
       - run: |
-          echo "${{ steps.yaml.outputs.service_name }}"
           echo "${{ steps.yaml.outputs.deployment_stacks }}"
           echo "${{ steps.yaml.outputs.test_phases }}"
       - name: Checkout configuration repo
@@ -82,11 +111,11 @@ jobs:
           path: gitops-config
       - name: Update Image Tag Values
         run: |
-          new_image_tag=${{ github.sha }}
+          new_image_tag=${GITHUB_SHA:0:10}
           workload_dir="workload"
 
           # Update the values.yaml file with the new image tag
-          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$service_name/deployment.yaml"
+          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
         working-directory: gitops-config
       - name: Commit the changes made
         run: |
@@ -96,17 +125,49 @@ jobs:
           git status
           git push
         working-directory: gitops-config
-#      - name: deploy
-#        run: |
-#          echo "Deployment non-prod ... by ${{ github.event_name }}"
-#          echo "Create PR into configuration repo and merge automatically"
   deploy-promote-prod:
-    if: github.event_name == 'push'
+    if: github.event_name != 'push' && env.ENVIRONMENT == 'production'
     runs-on: ubuntu-latest
     needs: mock-build
     environment: production
     steps:
-      - name: deploy
-        run: | 
-          echo "Deployment production ... by ${{ github.event_name }}"
-          echo "Create PR into configuration repo and require review before merge"
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REPO_GITHUB_TOKEN }}
+      - uses: actions-tools/yaml-outputs@v2
+        id: yaml
+        with:
+          file-path: 'cicd.yaml'
+      - run: |
+          echo "${{ steps.yaml.outputs.deployment_stacks }}"
+          echo "${{ steps.yaml.outputs.test_phases }}"
+      - name: Checkout configuration repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.REPO_GITHUB_TOKEN }}
+          repository: rickliang0632/gitops-configuration
+          path: gitops-config
+      - name: Update Image Tag Values
+        run: |
+          new_image_tag=${GITHUB_SHA:0:10}
+          workload_dir="workload"
+
+          # Update the values.yaml file with the new image tag
+          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
+        working-directory: gitops-config
+      - name: Commit the changes made
+        run: |
+          export HEAD_BRANCH="deploy/update-${SERVICE_NAME}-image-tag-${GITHUB_SHA:0:10}"
+          echo "HEAD_BRANCH=${HEAD_BRANCH}" >> $GITHUB_ENV
+
+          git config --local user.email "rickliang@github.com"
+          git config --local user.name "${{ github.actor }}"
+          git switch -c ${HEAD_BRANCH}
+          git add .
+          git commit -m "update image tag with ${GITHUB_SHA:0:10}"
+          git push -u origin ${HEAD_BRANCH}
+        working-directory: gitops-config
+      - name: open PR
+        run: gh pr create --title "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}" --base main --head ${HEAD_BRANCH} --body "" -r ricliang0632
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}

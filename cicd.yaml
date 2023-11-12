@@ -1,4 +1,3 @@
-service_name: gitops-cicd
 deployment_stacks:
   dev:
     - stack1
