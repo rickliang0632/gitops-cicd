@@ -74,7 +74,7 @@ jobs:
           path: gitops-config
       - name: Update Image Tag Values
         run: |
-          new_image_tag=${GITHUB_SHA:0:10}
+          new_image_tag="${GITHUB_SHA:0:10}-${{ github.run_number }}"
           workload_dir="workload"
 
           # Update the values.yaml file with the new image tag
@@ -149,7 +149,7 @@ jobs:
           path: gitops-config
       - name: Update Image Tag Values
         run: |
-          new_image_tag=${GITHUB_SHA:0:10}
+          new_image_tag="${GITHUB_SHA:0:10}-${{ github.run_number }}"
           workload_dir="workload"
 
           # Update the values.yaml file with the new image tag
