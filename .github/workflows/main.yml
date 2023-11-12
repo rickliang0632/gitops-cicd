@@ -121,7 +121,7 @@ jobs:
         run: |
           git config --global user.name 'Rick Liang'
           git config --global user.email 'rickliang@seismic.com'
-          git commit -am "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}"
+          git commit -am "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}-${{ github.run_number }}"
           git status
           git push
         working-directory: gitops-config
