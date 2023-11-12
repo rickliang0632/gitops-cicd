@@ -171,3 +171,4 @@ jobs:
         run: gh pr create --title "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}-${{ github.run_number }}" --base main --head ${HEAD_BRANCH} --body "" -r rickliang0632
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
+        working-directory: gitops-config
