@@ -51,7 +51,7 @@ jobs:
         name: log-push
         if: github.event_name == 'push'
   deploy-manul:
-    if: github.event_name != 'push'
+    if: github.event_name != 'push' && !contains(fromJson('["stack7", "stack8"]'), inputs.stacks)
     runs-on: ubuntu-latest
     needs: mock-build
     environment: ${{ inputs.environment }}
