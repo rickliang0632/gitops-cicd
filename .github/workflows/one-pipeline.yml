@@ -78,7 +78,7 @@ jobs:
           workload_dir="workload"
 
           # Update the values.yaml file with the new image tag
-          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
+          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:non-prod-$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
         working-directory: gitops-config
       - name: Commit the changes made
         run: |
@@ -115,7 +115,7 @@ jobs:
           workload_dir="workload"
 
           # Update the values.yaml file with the new image tag
-          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
+          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:non-prod-$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
         working-directory: gitops-config
       - name: Commit the changes made
         run: |
@@ -172,7 +172,7 @@ jobs:
           workload_dir="workload"
 
           # Update the values.yaml file with the new image tag
-          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
+          sed -i "s/^          image: gitops-cicd:.*/          image: gitops-cicd:prod-$new_image_tag/" "$workload_dir/$SERVICE_NAME/deployment.yaml"
         working-directory: gitops-config
       - name: Commit the changes made
         run: |
