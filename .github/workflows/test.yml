@@ -5,7 +5,7 @@ name: automation-test
 # Controls when the workflow will run
 on:
   workflow_run:
-    workflows: [learn-github-actions]
+    workflows: [one-stage-github-actions]
     types:
       - completed
 
