@@ -26,7 +26,7 @@ on:
       #  required: false
       #  type: boolean
       environment:
-        description: 'Environment to run tests against'
+        description: 'Environment to run deployment against'
         type: environment
         required: true
 env:
@@ -44,7 +44,6 @@ jobs:
         name: log-inputs
         env:
           STACK: ${{ inputs.stacks }}
-          TAGS: ${{ inputs.tags }}
           ENVIRONMENT: ${{ inputs.environment }}
       - run: |
           echo "EventName: ${{ github.event_name }}"
@@ -83,7 +82,7 @@ jobs:
       - name: Commit the changes made
         run: |
           git config --global user.name 'Rick Liang'
-          git config --global user.email 'rickliang@seismic.com'
+          git config --global user.email 'rickliang@github.com'
           git commit -am "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}-${{ github.run_number }}"
           git status
           git push
@@ -120,7 +119,7 @@ jobs:
       - name: Commit the changes made
         run: |
           git config --global user.name 'Rick Liang'
-          git config --global user.email 'rickliang@seismic.com'
+          git config --global user.email 'rickliang@github.com'
           git commit -am "[${SERVICE_NAME}] updated image tag with ${GITHUB_SHA:0:10}-${{ github.run_number }}"
           git status
           git push
